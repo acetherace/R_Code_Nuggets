@@ -1,0 +1,120 @@
+===============================================
+Check count of NA's in each column of dataframe
+===============================================
+colSums(is.na(weather_raw))
+
+==================================
+delete or clear global environment
+==================================
+remove(list=ls())
+
+======================================================
+Load data into R, download data if not already present
+======================================================
+fileName <- "filename.csv"
+if (!file.exists(fileName)){
+  url <- "https://file.csv"
+  download.file(url = url, destfile = fileName)
+}
+x <- read.csv(fileName)
+
+========================================
+View rendered html file stored on github
+========================================
+http://htmlpreview.github.com/?<github url here>
+
+========================================
+Converting data from long to wide format
+========================================
+library(reshape2); library(datasets); data(ChickWeight)
+wideCW <- dcast(ChickWeight, Diet + Chick ~ Time, 
+                value.var="weight")
+
+=====================
+histogram with ggplot
+=====================
+library(ggplot2)
+g = ggplot(data.frame(medians=medians), aes(x=medians))
+g = g + geom_histogram(color="black", fill="lightblue", binwidth=0.05)
+g
+
+==========================================
+panel plots with ggplot (45 degree lables)
+==========================================
+library(ggplot2); library(gridExtra)
+figf<-ggplot(ford,aes(x=EVTYPE1,y=FATALITIES))+
+        geom_bar(stat="identity",fill="red",width=.6)+
+        theme(axis.text.x=element_text(face="plain",                                    color="black",size=8,angle=45,hjust=1),
+              plot.title=element_text(size=11),
+              axis.title=element_text(size=9))+
+        scale_x_discrete(limits=ford$EVTYPE1[1:10])+
+        labs(x="",y="",title="Fatalities")
+figi <- ...
+figp <- ...
+figc <- ...
+grid.arrange(figf,figi,figp,figc,ncol = 2)
+
+===========================================================
+bar chart, ggplot2, horizontal bars, values at ends of bars
+===========================================================
+ggplot(data = fat.data, aes(x=reorder(EVTYPE,+Fat), y = Fat)) +
+    geom_col() + coord_flip() + xlab("") + theme_minimal() +
+    scale_y_continuous(name = "Fatalities", breaks=seq(0,6000,1000), limits=c(0, 6100)) + 
+    geom_text(aes(label=Fat), hjust=-0.2, vjust=0.5, color="black", size=3.5) +
+    ggtitle("Top 10 Weather Events by Human Fatality")
+
+============================
+color codes US maps by state
+============================
+
+====================================================
+use dplyr to group by and summarize / aggregate data
+====================================================
+dmg <- x %>% group_by(EVTYPE) %>% 
+           summarize(Eco.Dmg = sum(PROPDMG, na.rm = TRUE) + 
+                         sum(CROPDMG, na.rm = TRUE),
+                     Inj = sum(INJURIES, na.rm = TRUE),
+                     Fat = sum(FATALITIES, na.rm = TRUE))
+
+=============================================================
+use ggplot to plot histogram with normal distribution overlay
+=============================================================
+bw <- 0.05
+means.plot2 = ggplot(data.frame(sample.means=means.sim), aes(x=sample.means))
+means.plot2 = means.plot2 + geom_histogram(color="lightblue", fill="lightblue" , binwidth=bw) + xlab("") +
+    stat_function(fun=function(x, mean, sd, n, bw){ 
+                     dnorm(x = x, mean = mean, sd = sd) * n * bw
+    }, 
+    args = c(mean = mean(means.sim), sd = sd(means.sim), n = 1000, bw = bw),
+    size = 1) +
+    ggtitle("Distribution of Sample Means with Normal Distribution Overlay")
+
+=================================
+loading multiple packages at once
+=================================
+pkg <- c("dplyr", "ggplot2", "gridExtra", "knitr")
+sapply(pkg, require, character.only = TRUE)
+
+===========================
+control scientific notation
+===========================
+options(scipen=999)
+
+=======================================
+logical bin width for ggplot histograms
+=======================================
+bw = (range(tg$len)[2] - range(tg$len)[1]) / nrow(tg)
+bw = bw * 1.5
+
+================================================
+initialize an empty data frame with column names
+================================================
+results <- data.frame(CI.LB = numeric(0), CI.UB = numeric(0),
+                      p.value = numeric(0))
+
+========================================
+   pairs plot with ggplot
+========================================
+require(datasets); data(swiss); require(GGally); require(ggplot2)
+g = ggpairs(swiss, lower = list(continuous = "smooth"),
+            params = c(method = "loess")); g 
