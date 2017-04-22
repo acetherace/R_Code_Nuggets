@@ -33,6 +33,26 @@ if (!file.exists(fileName)){
 x <- read.csv(fileName)
 ```
 
+### Multiple files, download if not present, assign to data frames
+```{r}
+url <- c("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv",
+         "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv")
+filename <- c("pml-training.csv", "pml-testing.csv")
+
+datafiles <- list(c(url[1],filename[1]),c(url[2],filename[2]))
+
+getData <- function(inp){
+    url <- inp[1]; fileName <- inp[2]
+    if (!file.exists(fileName)){
+      download.file(url = url, destfile = fileName)
+    }
+    x <- read.csv(fileName); x
+}
+
+data <- lapply(datafiles, getData)
+train <- data[[1]]; test <- data[[2]]
+```
+
 
 ### View rendered html file stored on github
 
@@ -149,12 +169,33 @@ g = ggpairs(swiss, lower = list(continuous = "smooth"),
             params = c(method = "loess")); g 
 ```
 
+### feature correlations: heatmaps and list of highest correlations
+
+```{r}
+heatmap(cor(train[-53]), symm=TRUE)
+
+melt_cor <- melt(cor(train[-53]))
+melt_cor$value <- abs(melt_cor$value)
+melt_cor <- melt_cor[order(melt_cor$value, decreasing=TRUE),]
+melt_cor <- melt_cor[melt_cor$value != 1,]
+kable(head(melt_cor,10))
+
+cor_hmap <- ggplot(data=melt_cor, aes(x=Var1, y=Var2, fill=value)) + geom_tile()
+cor_hmap <- cor_hmap + theme(axis.text.x = element_text(angle = 90))
+cor_hmap
+```
 
 ### plot heat map of missing data
 
 ```{r}
 library(Amelia)
 missmap(training.data.raw, main = "Missing values vs observed")
+```
+
+### heatmap with dendrogram and clustering turned off
+
+```{r}
+nba_heatmap <- heatmap(nba_matrix, Rowv=NA, Colv=NA, col = cm.colors(256), scale="column", margins=c(5,10))
 ```
 
 ### covert date to julian day
