@@ -118,11 +118,15 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">R Code Chunks</h1>
 <h4 class="author"><em>Adam Lineberry</em></h4>
-<h4 class="date"><em>April 2, 2017</em></h4>
+<h4 class="date"><em>23 April, 2017</em></h4>
 
 </div>
 
 
+<div id="insert-todays-date-in-rmarkdown-date-field" class="section level3">
+<h3>Insert today’s date in RMarkdown date field</h3>
+<pre class="r"><code>date: &quot;`r format(Sys.time(), '%d %B, %Y')`&quot;</code></pre>
+</div>
 <div id="check-count-of-nas-in-each-column-of-dataframe" class="section level3">
 <h3>Check count of NA’s in each column of dataframe</h3>
 <pre class="r"><code>colSums(is.na(weather_raw))</code></pre>
@@ -139,6 +143,25 @@ if (!file.exists(fileName)){
   download.file(url = url, destfile = fileName)
 }
 x &lt;- read.csv(fileName)</code></pre>
+</div>
+<div id="multiple-files-download-if-not-present-assign-to-data-frames" class="section level3">
+<h3>Multiple files, download if not present, assign to data frames</h3>
+<pre class="r"><code>url &lt;- c(&quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&quot;,
+         &quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&quot;)
+filename &lt;- c(&quot;pml-training.csv&quot;, &quot;pml-testing.csv&quot;)
+
+datafiles &lt;- list(c(url[1],filename[1]),c(url[2],filename[2]))
+
+getData &lt;- function(inp){
+    url &lt;- inp[1]; fileName &lt;- inp[2]
+    if (!file.exists(fileName)){
+      download.file(url = url, destfile = fileName)
+    }
+    x &lt;- read.csv(fileName); x
+}
+
+data &lt;- lapply(datafiles, getData)
+train &lt;- data[[1]]; test &lt;- data[[2]]</code></pre>
 </div>
 <div id="view-rendered-html-file-stored-on-github" class="section level3">
 <h3>View rendered html file stored on github</h3>
@@ -227,10 +250,28 @@ bw = bw * 1.5</code></pre>
 g = ggpairs(swiss, lower = list(continuous = &quot;smooth&quot;),
             params = c(method = &quot;loess&quot;)); g </code></pre>
 </div>
+<div id="feature-correlations-heatmaps-and-list-of-highest-correlations" class="section level3">
+<h3>feature correlations: heatmaps and list of highest correlations</h3>
+<pre class="r"><code>heatmap(cor(train[-53]), symm=TRUE)
+
+melt_cor &lt;- melt(cor(train[-53]))
+melt_cor$value &lt;- abs(melt_cor$value)
+melt_cor &lt;- melt_cor[order(melt_cor$value, decreasing=TRUE),]
+melt_cor &lt;- melt_cor[melt_cor$value != 1,]
+kable(head(melt_cor,10))
+
+cor_hmap &lt;- ggplot(data=melt_cor, aes(x=Var1, y=Var2, fill=value)) + geom_tile()
+cor_hmap &lt;- cor_hmap + theme(axis.text.x = element_text(angle = 90))
+cor_hmap</code></pre>
+</div>
 <div id="plot-heat-map-of-missing-data" class="section level3">
 <h3>plot heat map of missing data</h3>
 <pre class="r"><code>library(Amelia)
 missmap(training.data.raw, main = &quot;Missing values vs observed&quot;)</code></pre>
+</div>
+<div id="heatmap-with-dendrogram-and-clustering-turned-off" class="section level3">
+<h3>heatmap with dendrogram and clustering turned off</h3>
+<pre class="r"><code>nba_heatmap &lt;- heatmap(nba_matrix, Rowv=NA, Colv=NA, col = cm.colors(256), scale=&quot;column&quot;, margins=c(5,10))</code></pre>
 </div>
 <div id="covert-date-to-julian-day" class="section level3">
 <h3>covert date to julian day</h3>

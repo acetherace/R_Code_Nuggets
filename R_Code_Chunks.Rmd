@@ -1,7 +1,7 @@
 ---
 title: "R Code Chunks"
 author: "Adam Lineberry"
-date: "April 2, 2017"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
 ---
 
@@ -9,8 +9,14 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
+### Insert today's date in RMarkdown date field
+
+```{r}
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+```
 
 ### Check count of NA's in each column of dataframe
+
 ```{r}
 colSums(is.na(weather_raw))
 ```
